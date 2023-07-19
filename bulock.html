@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ブロック崩しゲーム</title>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="300" style="border: 1px solid black;"></canvas>
+    <script>
+        // ゲームキャンバスの取得
+        var canvas = document.getElementById("gameCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // ボールの初期位置と速度
+        var ballX = canvas.width / 2;
+        var ballY = canvas.height - 30;
+        var ballSpeedX = 3;
+        var ballSpeedY = -3;
+
+        // パドルの初期位置とサイズ
+        var paddleWidth = 80;
+        var paddleHeight = 10;
+        var paddleX = (canvas.width - paddleWidth) / 2;
+
+        // ゲームのメインループ
+        function draw() {
+            // ボールの描画
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, 10, 0, Math.PI*2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+
+            // パドルの描画
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+
+            // ボールの動き
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            // ボールの跳ね返り
+            if (ballX < 0 || ballX > canvas.width) {
+                ballSpeedX = -ballSpeedX;
+            }
+            if (ballY < 0 || ballY > canvas.height) {
+                ballSpeedY = -ballSpeedY;
+            }
+
+            // パドルとの衝突判定
+            if (ballY > canvas.height - paddleHeight && ballX > paddleX && ballX < paddleX + paddleWidth) {
+                ballSpeedY = -ballSpeedY;
+            }
+
+            // ゲームオーバー判定
+            if (ballY > canvas.height) {
+                alert("ゲームオーバー");
+                document.location.reload();
+            }
+
+            // パドルの操作
+            document.addEventListener("mousemove", function(event) {
+                var relativeX = event.clientX - canvas.offsetLeft;
+                if (relativeX > 0 && relativeX < canvas.width) {
+                    paddleX = relativeX - paddleWidth / 2;
+                }
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        // ゲーム開始
+        draw();
+    </script>
+</body>
+</html>
